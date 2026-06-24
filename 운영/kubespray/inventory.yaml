@@ -1,0 +1,141 @@
+all:
+  vars:
+    ansible_port: 22
+    ansible_user: ansible
+    ansible_become: yes
+    ansible_hostname: "{{ inventory_hostname }}"
+
+  hosts:
+    k8s-cp01:
+      ansible_host: 192.168.10.11
+      ip: 192.168.10.11
+      access_ip: 192.168.10.11
+
+    k8s-cp02:
+      ansible_host: 192.168.10.12
+      ip: 192.168.10.12
+      access_ip: 192.168.10.12
+
+    k8s-cp03:
+      ansible_host: 192.168.10.13
+      ip: 192.168.10.13
+      access_ip: 192.168.10.13
+
+    k8s-worker01:
+      ansible_host: 192.168.10.21
+      ip: 192.168.10.21
+      access_ip: 192.168.10.21
+
+    k8s-worker02:
+      ansible_host: 192.168.10.22
+      ip: 192.168.10.22
+      access_ip: 192.168.10.22
+
+    k8s-worker03:
+      ansible_host: 192.168.10.23
+      ip: 192.168.10.23
+      access_ip: 192.168.10.23
+
+    k8s-worker04:
+      ansible_host: 192.168.10.24
+      ip: 192.168.10.24
+      access_ip: 192.168.10.24
+
+    k8s-infra01:
+      ansible_host: 192.168.10.31
+      ip: 192.168.10.31
+      access_ip: 192.168.10.31
+
+    k8s-infra02:
+      ansible_host: 192.168.10.32
+      ip: 192.168.10.32
+      access_ip: 192.168.10.32
+
+    k8s-infra03:
+      ansible_host: 192.168.10.33
+      ip: 192.168.10.33
+      access_ip: 192.168.10.33
+
+    k8s-router01:
+      ansible_host: 192.168.10.41
+      ip: 192.168.10.41
+      access_ip: 192.168.10.41
+
+    k8s-router02:
+      ansible_host: 192.168.10.42
+      ip: 192.168.10.42
+      access_ip: 192.168.10.42
+
+    k8s-storage01:
+      ansible_host: 192.168.10.51
+      ip: 192.168.10.51
+      access_ip: 192.168.10.51
+
+    k8s-storage02:
+      ansible_host: 192.168.10.52
+      ip: 192.168.10.52
+      access_ip: 192.168.10.52
+
+    k8s-storage03:
+      ansible_host: 192.168.10.53
+      ip: 192.168.10.53
+      access_ip: 192.168.10.53
+
+    k8s-lb01:
+      ansible_host: 192.168.10.61
+      ip: 192.168.10.61
+      access_ip: 192.168.10.61
+
+    k8s-lb02:
+      ansible_host: 192.168.10.62
+      ip: 192.168.10.62
+      access_ip: 192.168.10.62
+
+  children:
+    kube_control_plane:
+      hosts:
+        k8s-cp01:
+        k8s-cp02:
+        k8s-cp03:
+
+    kube_worker:
+      hosts:
+        k8s-worker01:
+        k8s-worker02:
+        k8s-worker03:
+        k8s-worker04:
+
+    kube_infra:
+      hosts:
+        k8s-infra01:
+        k8s-infra02:
+        k8s-infra03:
+
+    kube_router:
+      hosts:
+        k8s-router01:
+        k8s-router02:
+
+    kube_storage:
+      hosts:
+        k8s-storage01:
+        k8s-storage02:
+        k8s-storage03:
+
+    kube_haproxy:
+      hosts:
+        k8s-lb01:
+        k8s-lb02:
+      vars:
+        haproxy_vip: 192.168.10.100
+
+    kube_node:
+      children:
+        kube_worker:
+        kube_infra:
+        kube_router:
+        kube_storage:
+    k8s_cluster:
+      children:
+        kube_control_plane:
+        kube_node:
