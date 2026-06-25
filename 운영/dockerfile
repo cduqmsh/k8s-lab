@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: harbor.local/myapp/myapp:latest
+          imagePullPolicy: IfNotPresent
+          command: ["sh", "-c"]
+          args:
+            - envsubst < /apm/scouter.conf.template > /apm/scouter.conf && java ${JVM_OPTS} ${JVM_PROXY_OPTS} -jar /opt/app/app.war
+          workingDir: /opt/app
+          env:
+            - name: JAVA_HOME
+              value: "/usr/local/openjdk-11"
+            - name: LANG
+              value: "C.UTF-8"
+            - name: JAVA_VERSION
+              value: "11.0.16"
+            - name: TZ
+              value: "Asia/Seoul"
+          ports:
+            - containerPort: 8080
+          securityContext:
+            runAsUser: 701
